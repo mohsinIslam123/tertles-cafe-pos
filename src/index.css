@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+  }
+
+  html {
+    /* Prevent bounce scroll on iOS */
+    overscroll-behavior: none;
+  }
+
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    overscroll-behavior: none;
+  }
+}
+
+@layer utilities {
+  /* iOS safe area bottom padding for bottom nav */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Prevent text selection on UI elements */
+  .no-select {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
