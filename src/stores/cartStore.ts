@@ -98,7 +98,7 @@ export const useCartStore = create<CartState>((set, get) => ({
   customerId: null,
   customerName: '',
   customerPhone: '',
-  paymentMode: null,
+  paymentMode: 'cash',
   cashReceived: 0,
   nextInvoiceNumber: '…',
   totals: EMPTY_TOTALS,
@@ -212,6 +212,7 @@ export const useCartStore = create<CartState>((set, get) => ({
     if (!state.paymentMode)             return { ok: false, reason: 'Select a payment mode.' };
     if (
       state.paymentMode === 'cash' &&
+      state.cashReceived > 0 &&
       state.cashReceived < state.totals.total
     ) {
       return { ok: false, reason: `Cash received (₹${state.cashReceived}) is less than total (₹${state.totals.total}).` };
@@ -343,7 +344,7 @@ export const useCartStore = create<CartState>((set, get) => ({
       customerId:           draft.customerId,
       customerName:         draft.customerName,
       customerPhone:        draft.customerPhone,
-      paymentMode:          draft.paymentMode,
+      paymentMode:          draft.paymentMode ?? 'cash',
       cashReceived:         draft.cashReceived,
     };
 
@@ -364,7 +365,7 @@ export const useCartStore = create<CartState>((set, get) => ({
       customerId:           null,
       customerName:         '',
       customerPhone:        '',
-      paymentMode:          null,
+      paymentMode:          'cash',
       cashReceived:         0,
       totals:               EMPTY_TOTALS,
       nextInvoiceNumber:    num,
