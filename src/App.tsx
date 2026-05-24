@@ -10,9 +10,9 @@ import SettingsScreen from './screens/SettingsScreen';
 import CustomersScreen from './screens/CustomersScreen';
 import BillSearchScreen from './screens/BillSearchScreen';
 import BottomNav from './components/BottomNav';
-import Placeholder from './screens/Placeholder';
 import ReportsScreen from './screens/ReportsScreen';
 import DayCloseScreen from './screens/DayCloseScreen';
+import PhoneSyncScreen from './screens/PhoneSyncScreen';
 import { usePrinterStore } from './stores/printerStore';
 import { scheduleNightlyBackup } from './services/backup';
 
@@ -63,7 +63,6 @@ export default function App() {
     initAuth();
     initApp();
     initPrinter();
-    // Start nightly 2 AM backup scheduler (no-op if Supabase not configured)
     scheduleNightlyBackup();
   }, []);
 
@@ -84,6 +83,9 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* ── Public routes (no auth needed) ───────────────────────────────── */}
+        <Route path="/sync" element={<PhoneSyncScreen />} />
+
         {/* ── Auth routes ──────────────────────────────────────────────────── */}
         <Route
           path="/login"
@@ -110,7 +112,6 @@ export default function App() {
           path="/bill"
           element={
             <RequireAuth>
-              {/* No BottomNav on bill screen — full focus */}
               <NewBill />
             </RequireAuth>
           }
