@@ -5,6 +5,7 @@ interface ConfirmDialogProps {
   title: string;
   message: string;
   confirmLabel?: string;
+  cancelLabel?: string;        // NEW: custom cancel label
   confirmDestructive?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
@@ -15,11 +16,11 @@ export default function ConfirmDialog({
   title,
   message,
   confirmLabel = 'Confirm',
+  cancelLabel = 'Cancel',     // default stays "Cancel"
   confirmDestructive = false,
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
-  // Lock body scroll when open
   useEffect(() => {
     if (open) document.body.style.overflow = 'hidden';
     else document.body.style.overflow = '';
@@ -54,7 +55,7 @@ export default function ConfirmDialog({
             className="flex-1 h-12 bg-gray-100 text-gray-700 rounded-2xl font-semibold text-sm
                        active:bg-gray-200 transition-colors"
           >
-            Cancel
+            {cancelLabel}
           </button>
           <button
             onClick={onConfirm}

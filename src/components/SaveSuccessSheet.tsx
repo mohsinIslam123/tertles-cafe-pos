@@ -124,9 +124,23 @@ export default function SaveSuccessSheet({ invoice, items, onClose }: SaveSucces
 
   return (
     <>
+      {/* ── Overlay ──────────────────────────────────────────────────────────── */}
       <div className="fixed inset-0 z-50 flex items-end justify-center">
         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-        <div className="relative w-full max-w-md bg-white rounded-t-3xl px-5 pt-5 pb-10 shadow-2xl">
+
+        {/*
+          Sheet card:
+          - max-h-[80vh] prevents it from going below dock on MacBook
+          - overflow-y-auto so content scrolls inside the card
+          - pb-6 safe bottom padding (avoids dock overlap)
+          - On md+ screens: centered modal instead of bottom sheet
+        */}
+        <div className="relative w-full max-w-md bg-white
+                        rounded-t-3xl md:rounded-3xl
+                        px-5 pt-5 pb-6
+                        shadow-2xl
+                        max-h-[80vh] overflow-y-auto
+                        md:mb-8">
           <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-5" />
 
           {/* Success header */}
