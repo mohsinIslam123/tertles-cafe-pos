@@ -116,6 +116,20 @@ async function pushToSupabase(payload: BackupPayload): Promise<void> {
 // Fetch latest backup from Supabase
 // ─────────────────────────────────────────────────────────────────────────────
 
+
+function toDate(val: unknown): Date | unknown {
+  if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}/.test(val)) return new Date(val);
+  return val;
+}
+
+function fixDates<T extends Record<string, unknown>>(arr: unknown[], fields: string[]): T[] {
+  return (arr as T[]).map(item => {
+    const fixed = { ...item } as T;
+    for (const f of fields) if (f in fixed) (fixed as Record<string, unknown>)[f] = toDate((fixed as Record<string, unknown>)[f]);
+    return fixed;
+  });
+}
+
 export async function fetchFromSupabase(): Promise<BackupPayload | null> {
   const { SUPABASE_URL, SUPABASE_ANON_KEY, SHOP_NAME } = CONFIG;
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return null;
@@ -141,6 +155,10 @@ export async function fetchFromSupabase(): Promise<BackupPayload | null> {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function restoreFromPayload(payload: BackupPayload): Promise<void> {
+  const invoices     = fixDates(payload.invoices,     ['created_at', 'updated_at']);
+  const invoice_items= fixDates(payload.invoice_items,['created_at']);
+  const day_closes   = fixDates(payload.day_closes,   ['date', 'closed_at', 'opened_at']);
+
   await db.transaction('rw', [
     db.categories, db.items, db.customers,
     db.invoices, db.invoice_items, db.day_closes, db.settings,
@@ -156,9 +174,9 @@ export async function restoreFromPayload(payload: BackupPayload): Promise<void> 
     if (payload.categories.length)    await db.categories.bulkAdd(payload.categories as never[]);
     if (payload.items.length)         await db.items.bulkAdd(payload.items as never[]);
     if (payload.customers.length)     await db.customers.bulkAdd(payload.customers as never[]);
-    if (payload.invoices.length)      await db.invoices.bulkAdd(payload.invoices as never[]);
-    if (payload.invoice_items.length) await db.invoice_items.bulkAdd(payload.invoice_items as never[]);
-    if (payload.day_closes.length)    await db.day_closes.bulkAdd(payload.day_closes as never[]);
+    if (invoices.length)              await db.invoices.bulkAdd(invoices as never[]);
+    if (invoice_items.length)         await db.invoice_items.bulkAdd(invoice_items as never[]);
+    if (day_closes.length)            await db.day_closes.bulkAdd(day_closes as never[]);
     if (payload.settings.length)      await db.settings.bulkAdd(payload.settings as never[]);
   });
 }
