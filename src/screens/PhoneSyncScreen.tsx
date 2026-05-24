@@ -107,7 +107,7 @@ export default function PhoneSyncScreen() {
               </p>
             </div>
             <button
-              onClick={() => navigate('/login')}
+              onClick={() => window.location.href = '/login'}
               className="w-full mt-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 rounded-xl transition-colors text-sm"
             >
               Login karo →
@@ -173,7 +173,7 @@ export default function PhoneSyncScreen() {
 
             {/* Skip */}
             <button
-              onClick={() => navigate('/login')}
+              onClick={() => window.location.href = '/login'}
               className="w-full text-gray-500 hover:text-gray-300 text-sm py-1 transition-colors"
             >
               Skip → seedha login karo
