@@ -1,3 +1,21 @@
+import { Component, type ReactNode } from 'react';
+
+class ErrorBoundary extends Component<{children: ReactNode}, {error: string}> {
+  constructor(props: {children: ReactNode}) {
+    super(props);
+    this.state = { error: '' };
+  }
+  static getDerivedStateFromError(e: Error) { return { error: e.message + '\n' + e.stack }; }
+  render() {
+    if (this.state.error) return (
+      <div style={{padding:16,background:'#fee',fontFamily:'monospace',fontSize:12,whiteSpace:'pre-wrap',wordBreak:'break-all'}}>
+        <b>CRASH:</b>{this.state.error}
+      </div>
+    );
+    return this.props.children;
+  }
+}
+
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from './stores/authStore';
@@ -81,7 +99,7 @@ export default function App() {
   if (loading) return <AppLoader />;
 
   return (
-    <BrowserRouter>
+    <ErrorBoundary><BrowserRouter>
       <Routes>
         {/* ── Public routes (no auth needed) ───────────────────────────────── */}
         <Route path="/sync" element={<PhoneSyncScreen />} />
@@ -193,6 +211,6 @@ export default function App() {
           }
         />
       </Routes>
-    </BrowserRouter>
+    </BrowserRouter></ErrorBoundary>
   );
 }
