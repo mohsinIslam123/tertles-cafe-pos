@@ -23,9 +23,9 @@ export default function CustomerSearch({ onDone }: CustomerSearchProps) {
     setSearched(false);
     if (q.trim().length < 2) { setResults([]); return; }
 
-    const lower = q.toLowerCase();
+    const lower = ((q) ?? "").toLowerCase();
     const byPhone = await db.customers.where('phone').startsWithIgnoreCase(q).limit(5).toArray();
-    const byName  = await db.customers.filter(c => c.name.toLowerCase().includes(lower)).limit(5).toArray();
+    const byName  = await db.customers.filter(c => ((c.name) ?? "").toLowerCase().includes(lower)).limit(5).toArray();
 
     // Merge + dedupe
     const seen = new Set<number>();

@@ -138,11 +138,11 @@ export default function BillSearchScreen() {
       const q = query.trim().toLowerCase();
       if (q) {
         // Match invoice number directly
-        const byNumber = invoices.filter(i => i.invoice_number.toLowerCase().includes(q));
+        const byNumber = invoices.filter(i => ((i.invoice_number) ?? "").toLowerCase().includes(q));
 
         // Match by customer
         const customers = await db.customers
-          .filter(c => c.name.toLowerCase().includes(q) || c.phone.includes(q))
+          .filter(c => ((c.name) ?? "").toLowerCase().includes(q) || c.phone.includes(q))
           .toArray();
         const custIds = new Set(customers.map(c => c.id!));
         const byCust  = invoices.filter(i => i.customer_id && custIds.has(i.customer_id));

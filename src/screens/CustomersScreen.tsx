@@ -54,10 +54,10 @@ export default function CustomersScreen() {
   };
 
   const filtered = useMemo(() => {
-    const q = search.toLowerCase();
+    const q = ((search) ?? "").toLowerCase();
     if (!q) return customers;
     return customers.filter(c =>
-      c.name.toLowerCase().includes(q) || c.phone.includes(q)
+      ((c.name) ?? "").toLowerCase().includes(q) || c.phone.includes(q)
     );
   }, [customers, search]);
 

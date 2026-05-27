@@ -196,11 +196,11 @@ export default function ItemsScreen() {
 
   // Search filter
   const filteredItems = useMemo(() => {
-    const q = search.toLowerCase();
+    const q = ((search) ?? "").toLowerCase();
     if (!q) return items;
     return items.filter(it =>
-      it.name.toLowerCase().includes(q) ||
-      it.code.toLowerCase().includes(q)
+      ((it.name) ?? "").toLowerCase().includes(q) ||
+      ((it.code) ?? "").toLowerCase().includes(q)
     );
   }, [items, search]);
 

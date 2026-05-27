@@ -110,7 +110,7 @@ export default function NewBill() {
     const q = search.trim().toLowerCase();
     let result = items;
     if (!q && activeCat !== null) result = result.filter(it => it.category_id === activeCat);
-    if (q) result = result.filter(it => it.name.toLowerCase().includes(q) || it.code.toLowerCase() === q);
+    if (q) result = result.filter(it => ((it.name) ?? "").toLowerCase().includes(q) || ((it.code) ?? "").toLowerCase() === q);
     return result;
   }, [items, activeCat, search]);
 
