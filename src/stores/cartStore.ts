@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { db, getSetting, setSetting, getNextInvoiceNumber, peekNextInvoiceNumber } from '../db';
 import { computeBill, lineTotal, type CartLine, type BillTotals } from '../utils/billMath';
 import { CONFIG, getCurrentFY } from '../config';
+import { useAppStore } from './appStore';
 import type { Item, Invoice, InvoiceItem } from '../db';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -59,6 +60,7 @@ interface CartState {
   loadDraft: () => Promise<boolean>;
   clearCart: () => Promise<void>;
   refreshNextInvoiceNumber: () => Promise<void>;
+  refreshTotals: () => void;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -75,13 +77,14 @@ const EMPTY_SPLIT = { cash: 0, upi: 0, card: 0 };
 
 function recompute(state: Partial<CartState>): BillTotals {
   const activeLines = (state.lines ?? []).filter(l => l.qty > 0);
+  const gstEnabled = useAppStore.getState().gstEnabled;
   return computeBill(
     activeLines,
     state.billDiscountType ?? null,
     state.billDiscountValue ?? 0,
     state.serviceChargeEnabled ?? true,
     CONFIG.SERVICE_CHARGE_PERCENT,
-    CONFIG.GST_RATE,
+    gstEnabled ? CONFIG.GST_RATE : 0,
     CONFIG.GST_MODE,
   );
 }
@@ -385,4 +388,18 @@ export const useCartStore = create<CartState>((set, get) => ({
     const num = await peekNextInvoiceNumber(CONFIG.INVOICE_PREFIX, fy);
     set({ nextInvoiceNumber: num });
   },
+
+  // Re-run bill math with current cart lines — used when a global setting
+  // (e.g. GST on/off) changes outside of a cart edit.
+  refreshTotals: () => {
+    set(state => ({ totals: recompute(state) }));
+  },
 }));
+
+// Whenever the global GST toggle changes, re-price whatever is in the cart
+// right now so the on-screen total updates immediately.
+useAppStore.subscribe((state, prevState) => {
+  if (state.gstEnabled !== prevState.gstEnabled) {
+    useCartStore.getState().refreshTotals();
+  }
+});

@@ -41,6 +41,25 @@ function Row({ icon, label, value, onClick, destructive = false, disabled = fals
   );
 }
 
+function ToggleRow({ icon, label, sublabel, checked, onChange }: {
+  icon: string; label: string; sublabel?: string;
+  checked: boolean; onChange: () => void;
+}) {
+  return (
+    <div className="w-full flex items-center gap-3 px-4 py-3.5 text-left">
+      <span className="text-xl flex-none">{icon}</span>
+      <div className="flex-1">
+        <p className="text-sm font-medium text-gray-800">{label}</p>
+        {sublabel && <p className="text-xs text-gray-400">{sublabel}</p>}
+      </div>
+      <button onClick={onChange}
+        className={`relative w-12 h-6 rounded-full transition-colors flex-none ${checked ? 'bg-brand-600' : 'bg-gray-200'}`}>
+        <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${checked ? 'translate-x-6' : ''}`} />
+      </button>
+    </div>
+  );
+}
+
 function PrinterSection() {
   const { status, deviceName, isSupported, pair, unpair } = usePrinterStore();
   const [pairing, setPairing] = useState(false);
@@ -237,6 +256,7 @@ export default function SettingsScreen() {
   const { logout }   = useAuthStore();
   const navigate     = useNavigate();
   const [pinOpen, setPinOpen] = useState(false);
+  const { gstEnabled, setGstEnabled } = useAppStore();
 
   return (
     <div className="min-h-screen bg-gray-50 pb-28">
@@ -264,8 +284,10 @@ export default function SettingsScreen() {
         </Section>
 
         <Section title="Tax & Billing">
-          <Row icon="💰" label="GST Rate"       value={`${CONFIG.GST_RATE}%`} />
-          <Row icon="📊" label="GST Mode"       value={CONFIG.GST_MODE} />
+          <ToggleRow icon="🧾" label="GST" sublabel={gstEnabled ? 'Applied on every bill' : 'Not applied — bills are GST-free'}
+            checked={gstEnabled} onChange={() => setGstEnabled(!gstEnabled)} />
+          <Row icon="💰" label="GST Rate"       value={gstEnabled ? `${CONFIG.GST_RATE}%` : 'Disabled'} />
+          <Row icon="📊" label="GST Mode"       value={gstEnabled ? CONFIG.GST_MODE : '—'} />
           <Row icon="🍽️" label="Service Charge" value={CONFIG.SERVICE_CHARGE_PERCENT > 0 ? `${CONFIG.SERVICE_CHARGE_PERCENT}%` : 'Disabled'} />
         </Section>
 

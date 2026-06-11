@@ -267,10 +267,12 @@ export default function CartSheet({ open, onOpenChange, onLongPressItem, onSave,
               <TotalRow label={`Bill Discount${billDiscountType === 'percent' ? ` (${billDiscountValue}%)` : ' (flat)'}`} amount={totals.billDiscountAmount} negative />
             )}
             {totals.serviceChargeAmount > 0 && <TotalRow label={`Service Charge (${CONFIG.SERVICE_CHARGE_PERCENT}%)`} amount={totals.serviceChargeAmount} />}
-            <div className="border-t border-gray-200 mt-2 pt-2">
-              <TotalRow label={`CGST (${CONFIG.GST_RATE / 2}%)`} amount={totals.cgst} small />
-              <TotalRow label={`SGST (${CONFIG.GST_RATE / 2}%)`} amount={totals.sgst} small />
-            </div>
+            {(totals.cgst > 0 || totals.sgst > 0) && (
+              <div className="border-t border-gray-200 mt-2 pt-2">
+                <TotalRow label={`CGST (${CONFIG.GST_RATE / 2}%)`} amount={totals.cgst} small />
+                <TotalRow label={`SGST (${CONFIG.GST_RATE / 2}%)`} amount={totals.sgst} small />
+              </div>
+            )}
             {totals.roundOff !== 0 && <TotalRow label="Round Off" amount={Math.abs(totals.roundOff)} negative={totals.roundOff < 0} small />}
             <div className="border-t border-gray-300 mt-2 pt-2">
               <TotalRow label="TOTAL" amount={totals.total} bold accent />
